@@ -44,12 +44,5 @@ echo $SAMII_ROOT
 # Generate .json files with information (BEZ2018+MI)
 ( echo "addpath ${SAMII_ROOT};" && echo "CPC1_BEZ2018_SAMII('${CLARITY_ROOT}','${dataset}','${nsignals}');" ) | ${MATLAB_BIN} || exit 1
 
-# Run SAMII and obtain the transfer function
-# $PYTHON_BIN "$CLARITY_ROOT"/scripts/calculate_SI.py --nsignals="$nsignals" "$CLARITY_DATA"/metadata/CPC1."$dataset".json "$CLARITY_DATA"/clarity_data/scenes "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset" mbstoi."$dataset".csv
-
-#### BASELINE ####
-# Run the HL processing
-# $PYTHON_BIN "$CLARITY_ROOT"/scripts/run_HL_processing.py --nsignals="$nsignals" "$CLARITY_DATA"/metadata/scenes.CPC1_train.json "$CLARITY_DATA"/metadata/listeners.CPC1_train.json "$CLARITY_DATA"/metadata/CPC1."$dataset".json "$CLARITY_DATA"/clarity_data/scenes "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset" "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset"
-
-# Run the intelligibility model
+# Run SAMII from information and mutual information
 # $PYTHON_BIN "$CLARITY_ROOT"/scripts/calculate_SI.py --nsignals="$nsignals" "$CLARITY_DATA"/metadata/CPC1."$dataset".json "$CLARITY_DATA"/clarity_data/scenes "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset" mbstoi."$dataset".csv

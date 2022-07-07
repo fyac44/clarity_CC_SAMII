@@ -1,4 +1,4 @@
-function [neurogram_ft,neurogram_mr,neurogram_Sout,t_ft,t_mr,t_Sout,CFs] = generate_neurogram_BEZ2018(stim,Fs_stim,species,ag_fs,ag_dbloss)
+function [neurogram_ft,neurogram_mr,neurogram_Sout,t_ft,t_mr,t_Sout,CFs] = BEZ2018(stim,Fs_stim,species,ag_fs,ag_dbloss)
 
 % model fiber parameters
 numcfs = 40;

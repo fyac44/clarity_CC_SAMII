@@ -1,4 +1,4 @@
-function [psth_ft, t_ft] = generate_neurogram_BEZ2018_CUDA(stim,Fs_stim,species,ag_fs,ag_dbloss,CFs,numsponts_healthy)
+function [psth_ft, t_ft] = BEZ2018_GPU(stim,Fs_stim,species,ag_fs,ag_dbloss,CFs,numsponts_healthy,useGPU)
 %function [neurogram_Sout,t_Sout,t_mr,CFs] = generate_neurogram_BEZ2018_CUDA(stim,Fs_stim,species,ag_fs,ag_dbloss)
 % model fiber parameters
 numcfs = length(CFs);
