@@ -1,19 +1,22 @@
-/* This is the BEZ2018 version of the code for auditory periphery model from the Carney, Bruce and Zilany labs.
+/* This is the BEZ2018 version of the code for the middle ear filter from 
+ * the Carney, Bruce and Zilany labs.
  * 
- * This release implements the version of the model described in:
+ * Please refer to this work which contains the original work:
  *
- *   Bruce, I.C., Erfani, Y., and Zilany, M.S.A. (2018). "A Phenomenological
- *   model of the synapse between the inner hair cell and auditory nerve: 
- *   Implications of limited neurotransmitter release sites," to appear in
- *   Hearing Research. (Special Issue on "Computational Models in Hearing".)
+ *  Bruce, I.C., Erfani, Y., and Zilany, M.S.A. (2018). "A Phenomenological
+ *  model of the synapse between the inner hair cell and auditory nerve: 
+ *  Implications of limited neurotransmitter release sites," to appear in
+ *  Hearing Research. (Special Issue on "Computational Models in Hearing".)
  *
- * Please cite this paper if you publish any research
- * results obtained with this code or any modified versions of this code.
+ * This code was modified to be used in this work:
+ *  
+ *  Alvarez and Nogueira (2022). "Predicting Speech Intelligibility using
+ *  the Spike Activity Mutual Information Index". INTERSPEECH 2022.
+ *
+ * Please cite these papers if you publish any research results obtained 
+ * with this code or any modified versions of this code.
  *
  * See the file readme.txt for details of compiling and running the model.
- *
- * %%% Ian C. Bruce (ibruce@ieee.org), Yousof Erfani (erfani.yousof@gmail.com),
- *     Muhammad S. A. Zilany (msazilany@gmail.com) - December 2017 %%%
  *
  */
 
@@ -35,19 +38,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	
 	double *px, tdres, reptime;
-	int    species, pxbins, lp, totalstim;
+	int    species, pxbins, lp;
     mwSize outsize[2];
     
-	double *pxtmp, *speciestmp, *tdrestmp, *reptimetmp;
+	double *pxtmp, *speciestmp, *tdrestmp;
     double *ihcout;
    
 	void   model_ME(double *, int, double, int, double *);
 	
 	/* Check for proper number of arguments */
 	
-	if (nrhs != 4) 
+	if (nrhs != 3) 
 	{
-		mexErrMsgTxt("model_middleear requires 2 input arguments.");
+		mexErrMsgTxt("model_middleear requires 3 input arguments.");
 	}; 
 
 	if (nlhs !=1)  
@@ -60,7 +63,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	pxtmp		= mxGetPr(prhs[0]);
     speciestmp	= mxGetPr(prhs[1]);
     tdrestmp	= mxGetPr(prhs[2]);
-	reptimetmp	= mxGetPr(prhs[3]);
 		
 	/* Check individual input arguments */
 
@@ -75,15 +77,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexErrMsgTxt("Species must be 1 for cat, or 2 or 3 for human.\n");
 
     tdres = tdrestmp[0];
-	
-	reptime = reptimetmp[0];
-	if (reptime<pxbins*tdres)  /* duration of stimulus = pxbins*tdres */
-		mexErrMsgTxt("reptime should be equal to or longer than the stimulus duration.\n");
-   
-	/* Calculate number of samples for total repetition time */
-    totalstim = (int)floor(reptime/tdres+0.5);
 
-    px = (double*)mxCalloc(totalstim,sizeof(double)); 
+    px = (double*)mxCalloc(pxbins,sizeof(double)); 
 
 	/* Put stimulus waveform into pressure waveform */
 
@@ -93,7 +88,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	/* Create an array for the return argument */
 	
     outsize[0] = 1;
-	outsize[1] = totalstim;
+	outsize[1] = pxbins;
     
 	plhs[0] = mxCreateNumericArray(2, outsize, mxDOUBLE_CLASS, mxREAL);
 	
@@ -103,7 +98,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		
 	/* run the model */
 
-	model_ME(px,species,tdres,totalstim,ihcout);
+	model_ME(px,species,tdres,pxbins,ihcout);
 
  mxFree(px);
 

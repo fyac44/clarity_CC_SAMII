@@ -1,19 +1,23 @@
-/* This is the BEZ2018 version of the code for auditory periphery model from the Carney, Bruce and Zilany labs.
+/* This is a modified version of the IHC Model originally found in the 
+ * BEZ2018 model of the auditory periphery model from the Carney, Bruce 
+ * and Zilany labs.
  * 
  * This release implements the version of the model described in:
  *
- *   Bruce, I.C., Erfani, Y., and Zilany, M.S.A. (2018). "A Phenomenological
- *   model of the synapse between the inner hair cell and auditory nerve: 
- *   Implications of limited neurotransmitter release sites," to appear in
- *   Hearing Research. (Special Issue on "Computational Models in Hearing".)
+ *  Bruce, I.C., Erfani, Y., and Zilany, M.S.A. (2018). "A Phenomenological
+ *  model of the synapse between the inner hair cell and auditory nerve: 
+ *  Implications of limited neurotransmitter release sites," to appear in
+ *  Hearing Research. (Special Issue on "Computational Models in Hearing".)
  *
- * Please cite this paper if you publish any research
+ * This code was modified to be used in this work:
+ *  
+ *  Alvarez and Nogueira (2022). "Predicting Speech Intelligibility using
+ *  the Spike Activity Mutual Information Index". INTERSPEECH 2022.
+ *
+ * Please cite these papers if you publish any research
  * results obtained with this code or any modified versions of this code.
  *
  * See the file readme.txt for details of compiling and running the model.
- *
- * %%% Ian C. Bruce (ibruce@ieee.org), Yousof Erfani (erfani.yousof@gmail.com),
- *     Muhammad S. A. Zilany (msazilany@gmail.com) - December 2017 %%%
  *
  */
 
@@ -43,7 +47,6 @@ __global__ void IHCAN(double *ihcout,
                       double *tmpgain,
                       const double *meout, 
                       const double *cfs,
-                      const int nrep,
                       const double tdres,
                       const int totalstim,
                       const double *cohcs,
@@ -192,13 +195,7 @@ __global__ void IHCAN(double *ihcout,
 
         ihcouttmp[n+index*totalstim] = IhcLowPass(c1vihctmp+c2vihctmp,tdres,3000,n,1.0,7,ihc,ihcl);
     };  /* End of the loop */
-    
-    /* Stretched out the IHC output according to nrep (number of repetitions) */
-   
-    for(i=0;i<totalstim*nrep;i++)
-	{
-		ihcouttmp[i+index*totalstim] = ihcouttmp[((int) (fmod((double)i, (double)totalstim))) + index*totalstim];
-  	};   
+     
    	/* Adjust total path delay to IHC output signal */
     if (species==1)
         delay      = delay_cat(cf);
@@ -208,7 +205,7 @@ __global__ void IHCAN(double *ihcout,
     };
     delaypoint =__max(0,(int) ceil(delay/tdres));
             
-    for(i=delaypoint;i<totalstim*nrep;i++)
+    for(i=delaypoint;i<totalstim;i++)
 	{        
 		ihcout[i+index*totalstim] = ihcouttmp[i - delaypoint + index*totalstim];       
   	};   
