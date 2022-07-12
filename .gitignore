@@ -1,0 +1,24 @@
+# Compiled files
+*.mex*
+*.ptx
+
+# Images
+*.png
+*.eps
+*.jpeg
+*.jpg
+
+# Matlab Variables
+*.mat
+!THRESHOLD_ALL_*.mat
+
+# Some directories
+**/__pycache__
+**/env
+**/data
+
+# zip files
+*.zip
+
+# Workspaces
+*.code-workspace
