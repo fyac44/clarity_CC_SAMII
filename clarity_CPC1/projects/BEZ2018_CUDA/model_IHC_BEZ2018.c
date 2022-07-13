@@ -1,4 +1,10 @@
-/* This is the BEZ2018 version of the code for auditory periphery model from the Carney, Bruce and Zilany labs.
+/* ################################## IMPORTANT ######################################
+ * Code modified by Franklin Alvarez (2022) to not have repetitions into account!
+ * This modification are implemented only for SAMII. In the CUDA version of this code
+ * "nrep" is not even an input.
+ *####################################################################################
+ * 
+ * This is the BEZ2018 version of the code for auditory periphery model from the Carney, Bruce and Zilany labs.
  * 
  * This release implements the version of the model described in:
  *
@@ -79,6 +85,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	/* Check individual input arguments */
 
 	pxbins = (int) mxGetN(prhs[0]);
+
 	if (pxbins==1)
 		mexErrMsgTxt("px must be a row vector\n");
 
@@ -114,10 +121,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexErrMsgTxt("nrep must be greater that 0.\n");
 
     tdres = tdrestmp[0];
-	
+
 	reptime = reptimetmp[0];
-	if (reptime<pxbins*tdres)  /* duration of stimulus = pxbins*tdres */
+
+    /*
+	if (reptime<pxbins*tdres)
 		mexErrMsgTxt("reptime should be equal to or longer than the stimulus duration.\n");
+    */
 
     cohc = cohctmp[0]; /* impairment in the OHC  */
 	if ((cohc<0)|(cohc>1))
@@ -137,7 +147,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	/* Calculate number of samples for total repetition time */
 
 	/*totalstim = (int)floor((reptime*1e3)/(tdres*1e3)); */ /*older definition*/
-    totalstim = (int)floor(reptime/tdres+0.5);
+    /*totalstim = (int)floor(reptime/tdres+0.5;*/
+    totalstim = pxbins;
 
     px = (double*)mxCalloc(totalstim,sizeof(double)); 
 

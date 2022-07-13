@@ -71,7 +71,7 @@ Execute the file `mexANmodel.m`
 
 In total, there are 3 kernels that must be compiled with nvidia toolkit to take advantage of the GPU.
 
-It is important to make sure that the cuda toolkit is well installed. To check it type `nvcc --version`. It should return the version of the cuda compiler.
+It is important to make sure that the cuda toolkit is well installed. To check it type `nvcc --version` in the terminal. It should return the version of the cuda compiler.
 
 More information can be found [here](https://developer.nvidia.com/cuda-toolkit)
 
