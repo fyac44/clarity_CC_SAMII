@@ -87,8 +87,8 @@ end
 
 %% Get information from spike trains
 if useGPU
-    information = binauralMI_GPU(spt_trans, spt_per, numcfs, nFibers);
+    information = binauralMI_GPU(spt_trans, spt_per, numcfs, nFibers, CFs);
 else
-    information = binauralMI(spt_trans, spt_per, numcfs, nFibers);
+    information = binauralMI(spt_trans, spt_per, numcfs, nFibers, CFs);
 end
 

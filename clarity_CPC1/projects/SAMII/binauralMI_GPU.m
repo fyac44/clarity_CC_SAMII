@@ -1,4 +1,4 @@
-function information = binauralMI_GPU(spt_S, spt_R, numcfs, nFibers)
+function information = binauralMI_GPU(spt_S, spt_R, numcfs, nFibers, CFs)
 
 % Solve any mismatch due to different audio sample frequencies
 size_S = length(spt_S.t);
