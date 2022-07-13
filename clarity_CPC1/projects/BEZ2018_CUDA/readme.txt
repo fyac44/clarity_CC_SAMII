@@ -34,7 +34,15 @@ the function:
 
 *** Instructions for CUDA files ***
 
-# TBI
+In total, there are 2 kernels that must be compiled with nvidia toolkit to take advantage of the GPU.
+
+It is important to make sure that the cuda toolkit is well installed. To check it type `nvcc --version` in the terminal. It should return the version of the cuda compiler.
+
+More information can be found in https://developer.nvidia.com/cuda-toolkit
+
+To compile type in the terminal:
+nvcc -ptx model_IHC_BEZ2018.cu
+nvcc -ptx model_Synapse_BEZ2018.cu
 
 *** IMPORTANT NOTE ***
 Original code for the BEZ2018 model can be found in:

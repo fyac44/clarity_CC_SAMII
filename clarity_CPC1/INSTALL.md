@@ -73,7 +73,7 @@ In total, there are 3 kernels that must be compiled with nvidia toolkit to take 
 
 It is important to make sure that the cuda toolkit is well installed. To check it type `nvcc --version`. It should return the version of the cuda compiler.
 
-Mor information can be found [here](https://developer.nvidia.com/cuda-toolkit)
+More information can be found [here](https://developer.nvidia.com/cuda-toolkit)
 
 ```bash
 cd projects
