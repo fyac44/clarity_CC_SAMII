@@ -25,4 +25,4 @@
 *.code-workspace
 
 # Eggs
-*.egg-info*
+**/*.egg-info
