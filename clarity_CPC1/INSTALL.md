@@ -36,6 +36,7 @@ The challenge data is a 17 GB download containing a large sample of hearing aid 
 First, visit the [download site](https://mab.to/R6H84YNf74p5U) and download the following data pack
 
 - `clarity_CPC1_data.v1_1.tgz`  [17 GB]
+- `clarity_CPC1_data.test.v1.tgz`  [10 GB]
 
 To download: click on the file to select it and then click on the download icon in the top-right of the interface.
 
@@ -60,7 +61,28 @@ It can be run using,
 python3 scripts/check_data.py data/clarity_data/
 ```
 
-## 4. Generate predicted intelligibility scores
+## 4. Compile c code for the BEZ2018 model
+
+Open MATLAB and go to the following directory `projects/BEZ2018_CUDA`
+
+Execute the file `mexANmodel.m`
+
+## 5. Compile cu code for the BEZ2018 model (ONLY NVIDIA GPUs)
+
+In total, there are 3 kernels that must be compiled with nvidia toolkit to take advantage of the GPU.
+
+It is important to make sure that the cuda toolkit is well installed. To check it type `nvcc --version`. It should return the version of the cuda compiler.
+
+Mor information can be found [here](https://developer.nvidia.com/cuda-toolkit)
+
+```bash
+cd projects
+nvcc -ptx BEZ2018_GPU/model_IHC_BEZ2018.cu
+nvcc -ptx BEZ2018_GPU/model_Synapse_BEZ2018.cu
+nvcc -ptx SAMII/mutual_info.cu
+```
+
+## 6. Generate predicted intelligibility scores
 
 A baseline intelligibility model is provided. The model is based on a combination of the MSBG hearing loss model and the MBSTOI intelligibility metric. The same model was previously used in the CEC1 enhancement challenge in the objective evaluation of the hearing aid algorithms that were submitted.
 

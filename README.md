@@ -2,7 +2,11 @@
 
 
 :bangbang:
-This repository has been replaced with a newer release of the Clarity code that supports all Clarity Challenges: CEC1, CPC1 and the current challenge CEC2. Please redirect to [https://github.com/claritychallenge/clarity](https://github.com/claritychallenge/clarity) . 
+This repository is based on the former clarity challenge repository, but it has been replaced with a newer release of the Clarity code that supports all Clarity Challenges: CEC1, CPC1 and the current challenge CEC2. Please redirect to [https://github.com/claritychallenge/clarity](https://github.com/claritychallenge/clarity).
+
+SAMII is not moving to the newest repository since it was developed here. A newer version of SAMII will be developed in his own repository and will be announce in the future.
+
+This branch is meant to reproduce the results obtained in the challenge.
 :bangbang:
 
 

@@ -1,3 +1,13 @@
+# SAMII
+
+This is a branch of the original repository of the clarity challenge introducing the Spike Activity Mutual Information Index (SAMII).
+
+For more information about SAMII please refer to:
+
+```
+Alvarez and Nogueira (2022). "Predicting Speech Intelligibility using the Spike Activity Mutual Information Index". INTERSPEECH 2022.
+```
+
 # The 1st Clarity Prediction Challenge
 
 Clarity challenge baseline code for the first prediction challenge (CPC1).
