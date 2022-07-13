@@ -9,6 +9,7 @@
 *.jpg
 
 # Matlab Variables
+*.asv
 *.mat
 !THRESHOLD_ALL_*.mat
 

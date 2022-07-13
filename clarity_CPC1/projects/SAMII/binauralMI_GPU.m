@@ -57,8 +57,7 @@ for n=1:awTotal
             end
         end
     end
-    % Delay in seconds for the lowest RMSE (negative values means that
-    % ha signal is ahead of the anechoic signal)
+    % Delay in seconds for the best binaural representation 
     S_delay(n) = delay_S;
     R_delay(n) = delay_R;
 end

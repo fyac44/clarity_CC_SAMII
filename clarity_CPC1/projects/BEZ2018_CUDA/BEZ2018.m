@@ -1,112 +1,94 @@
-function [neurogram_ft,neurogram_mr,neurogram_Sout,t_ft,t_mr,t_Sout,CFs] = BEZ2018(stim,Fs_stim,species,ag_fs,ag_dbloss)
+function [psth, t_psth] = ...
+    BEZ2018(stim,Fs_stim,ag_fs,ag_dbloss,CFs,numsponts)
+% This is a modification of the orignal function "generate_neurogram" from 
+% the code provided with the publication Bruce et al., (2018).
+%
+% Input:
+%  - stim:      Sound wave that reaches the ear [uPa]
+%  - Fs_stim:   Sample frequency of the sound wave [Hz]
+%  - ag_fs:     Listener's audiogram frequencies [Hz]
+%  - ag_dbloss: Listener's audiogram losses [dB]
+%  - CFs:       Center frequencies for the BEZ2018 model [Hz]
+%  - numsponts: 1x3 array with the amount of low sapontaneous, mid 
+%               spontaneous and high spontaneous rate fibers per CF.
+%
+% Output:
+%  - psth:      Post Stimulus Time Histogram (Spikes grouped by CF)
+%  - t_psth:    Time stamps for the psth [s]
 
-% model fiber parameters
-numcfs = 40;
-CFs   = logspace(log10(250),log10(16e3),numcfs);  % CF in Hz;
+species = 2; % Use human version of the BEZ2018Model
+numcfs = length(CFs);
 
-% cohcs  = ones(1,numcfs);  % normal ohc function
-% cihcs  = ones(1,numcfs);  % normal ihc function
-
+% Interpolate the loss across CFs from the listener audiogram
 dbloss = interp1(ag_fs,ag_dbloss,CFs,'linear','extrap');
+[cohcs,cihcs,~]=fitaudiogram2(CFs,dbloss,species);
 
-% mixed loss
-[cohcs,cihcs,OHC_Loss]=fitaudiogram2(CFs,dbloss,species);
-
-% OHC loss
-% [cohcs,cihcs,OHC_Loss]=fitaudiogram(CFs,dbloss,species,dbloss);
-
-% IHC loss
-% [cohcs,cihcs,OHC_Loss]=fitaudiogram(CFs,dbloss,species,zeros(size(CFs)));
-
-numsponts_healthy = [16 23 61]; % Number of low-spont, medium-spont, and high-spont fibers at each CF in a healthy AN
-
+% Generate/read the threshold values and refractory periods for the ANF
+% population
 if exist('ANpopulation.mat','file')
-    load('ANpopulation.mat');
-    if (size(sponts.LS,2)<numsponts_healthy(1))||(size(sponts.MS,2)<numsponts_healthy(2))||(size(sponts.HS,2)<numsponts_healthy(3))||(size(sponts.HS,1)<numcfs||~exist('tabss','var'))
-        disp('Saved population of AN fibers in ANpopulation.mat is too small - generating a new population');
-        [sponts,tabss,trels] = generateANpopulation(numcfs,numsponts_healthy);
+    load('ANpopulation.mat', 'sponts', 'tabss', 'trels');
+    if (size(sponts.LS,2)<numsponts(1)) || ...
+            (size(sponts.MS,2)<numsponts(2)) || ...
+            (size(sponts.HS,2)<numsponts(3)) || ...
+            (size(sponts.HS,1)<numcfs || ~exist('tabss','var'))
+        [sponts,tabss,trels] = generateANpopulation(numcfs,numsponts);
     end
 else
-    [sponts,tabss,trels] = generateANpopulation(numcfs,numsponts_healthy);
-    disp('Generating population of AN fibers, saved in ANpopulation.mat')
+    [sponts,tabss,trels] = generateANpopulation(numcfs,numsponts);
 end
 
-implnt = 0;    % "0" for approximate or "1" for actual implementation of the power-law functions in the Synapse
+implnt = 0;
 noiseType = 1;  % 0 for fixed fGn (1 for variable fGn)
 
 % stimulus parameters
 Fs = 100e3;  % sampling rate in Hz (must be 100, 200 or 500 kHz)
 stim100k = resample(stim,Fs,Fs_stim).';
-T  = length(stim100k)/Fs;  % stimulus duration in seconds
-
-% PSTH parameters
-nrep = 1;
-psthbinwidth_mr = 100e-6; % mean-rate binwidth in seconds;
-windur_ft=32;
-smw_ft = hamming(windur_ft);
-windur_mr=128;
-smw_mr = hamming(windur_mr);
+nrep = 1; % ** THIS SHOULD ALWAYS BE ONE **
+stimdur  = length(stim100k)/Fs;  % stimulus duration in seconds
 
 pin = stim100k(:).';
-
 clear stim100k
 
-simdur = ceil(T*1.2/psthbinwidth_mr)*psthbinwidth_mr;
+% prepare output ** If nrep is other than 1 this code will fail **
+psth = zeros(numcfs, length(pin));
 
+% Compute the spike trains per critical band
 for CFlp = 1:numcfs
     
+    CF = CFs(CFlp);     % Center frequency of the critical band
+    cohc = cohcs(CFlp); % Outer hair cell loss
+    cihc = cihcs(CFlp); % Inner hair cell loss
     
-    CF = CFs(CFlp);
-    cohc = cohcs(CFlp);
-    cihc = cihcs(CFlp);
+    % Thresholds and refractoriness from the fibers in the current CF
+    sponts_concat = ...
+        [sponts.LS(CFlp,1:numsponts(1)) sponts.MS(CFlp,1:numsponts(2)) ...
+        sponts.HS(CFlp,1:numsponts(3))];
+    tabss_concat = ...
+        [tabss.LS(CFlp,1:numsponts(1)) tabss.MS(CFlp,1:numsponts(2)) ...
+        tabss.HS(CFlp,1:numsponts(3))];
+    trels_concat = ...
+        [trels.LS(CFlp,1:numsponts(1)) trels.MS(CFlp,1:numsponts(2)) ...
+        trels.HS(CFlp,1:numsponts(3))];
     
-    numsponts = round([1 1 1].*numsponts_healthy); % Healthy AN
-    %     numsponts = round([0.5 0.5 0.5].*numsponts_healthy); % 50% fiber loss of all types
-    %     numsponts = round([0 1 1].*numsponts_healthy); % Loss of all LS fibers
-    %     numsponts = round([cihc 1 cihc].*numsponts_healthy); % loss of LS and HS fibers proportional to IHC impairment
+    % Obtain the relative transmembrane potential with the IHC model
+    vihc = model_IHC_BEZ2018(pin,CF,nrep,1/Fs,stimdur,cohc,cihc,species);
     
-    sponts_concat = [sponts.LS(CFlp,1:numsponts(1)) sponts.MS(CFlp,1:numsponts(2)) sponts.HS(CFlp,1:numsponts(3))];
-    tabss_concat = [tabss.LS(CFlp,1:numsponts(1)) tabss.MS(CFlp,1:numsponts(2)) tabss.HS(CFlp,1:numsponts(3))];
-    trels_concat = [trels.LS(CFlp,1:numsponts(1)) trels.MS(CFlp,1:numsponts(2)) trels.HS(CFlp,1:numsponts(3))];
-    
-    vihc = model_IHC_BEZ2018(pin,CF,nrep,1/Fs,simdur,cohc,cihc,species);
-    
-    for spontlp = 1:sum(numsponts)
-        
-        disp(['CFlp = ' int2str(CFlp) '/' int2str(numcfs) '; spontlp = ' int2str(spontlp) '/' int2str(sum(numsponts))])
-
-        % flush the output for the display of the coutput in Octave
-        if exist ('OCTAVE_VERSION', 'builtin') ~= 0
-            fflush(stdout);
-        end
-        
-        
+    % Obtain the spike train for every ANFs in the CF
+    for spontlp = 1:sum(numsponts)        
         spont = sponts_concat(spontlp);
         tabs = tabss_concat(spontlp);
         trel = trels_concat(spontlp);
         
-        [psth_ft,meanrate,varrate,synout] = model_Synapse_BEZ2018(vihc,CF,nrep,1/Fs,noiseType,implnt,spont,tabs,trel);
-        psthbins = round(psthbinwidth_mr*Fs);  % number of psth_ft bins per psth bin
-        psth_mr = sum(reshape(psth_ft,psthbins,length(psth_ft)/psthbins));
-        
-        if spontlp == 1
-            neurogram_ft(CFlp,:) = filter(smw_ft,1,psth_ft);
-            neurogram_Sout(CFlp,:) = synout;            
-            neurogram_mr(CFlp,:) = filter(smw_mr,1,psth_mr);
-        else
-            
-            neurogram_ft(CFlp,:) = neurogram_ft(CFlp,:)+filter(smw_ft,1,psth_ft);
-            neurogram_Sout(CFlp,:) = neurogram_Sout(CFlp,:)+synout;
-            neurogram_mr(CFlp,:) = neurogram_mr(CFlp,:)+filter(smw_mr,1,psth_mr);
-        end
-        
+        % Synapse model to obtain the spike train
+        [psth_ft,~,~,~] = ...
+            model_Synapse_BEZ2018(vihc,CF,nrep,1/Fs,noiseType,implnt,...
+            spont,tabs,trel);
+
+        % Critical band integration
+        psth(CFlp,:) = psth(CFlp,:)+psth_ft;
     end
     
 end
 
-neurogram_ft = neurogram_ft(:,1:windur_ft/2:end); % 50% overlap in Hamming window
-t_ft = 0:windur_ft/2/Fs:(size(neurogram_ft,2)-1)*windur_ft/2/Fs; % time vector for the fine-timing neurogram
-neurogram_mr = neurogram_mr(:,1:windur_mr/2:end); % 50% overlap in Hamming window
-t_mr = 0:windur_mr/2*psthbinwidth_mr:(size(neurogram_mr,2)-1)*windur_mr/2*psthbinwidth_mr; % time vector for the mean-rate neurogram
-t_Sout = 0:1/Fs:(size(neurogram_Sout,2)-1)/Fs; % time vector for the synapse output neurogram
-
+% time vector for the spike activity
+t_psth = 0:1/Fs:(size(psth,2)-1)/Fs; 
