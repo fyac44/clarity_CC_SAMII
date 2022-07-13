@@ -26,21 +26,21 @@ itds = -itd_frames:itd_frames; % interaual time differece for binaural
 % Output structure
 information = struct();
 information.CFs = CFs;
-information.timeStamps = (0:total_frames-1)*hop*T;
+information.timeStamps = (0:awTotal-1)*awHop*samplesT;
 information.left = struct();
-information.left.mi = zeros(numcfs, total_frames);
-information.left.Si = zeros(numcfs, total_frames);
-information.left.Ri = zeros(numcfs, total_frames);
+information.left.mi = zeros(numcfs, awTotal);
+information.left.Si = zeros(numcfs, awTotal);
+information.left.Ri = zeros(numcfs, awTotal);
 information.right = struct();
-information.right.mi = zeros(numcfs, total_frames);
-information.right.Si = zeros(numcfs, total_frames);
-information.right.Ri = zeros(numcfs, total_frames);
+information.right.mi = zeros(numcfs, awTotal);
+information.right.Si = zeros(numcfs, awTotal);
+information.right.Ri = zeros(numcfs, awTotal);
 information.binaural = struct();
-information.binaural.S_delay = zeros(1, total_frames);
-information.binaural.R_delay = zeros(1, total_frames);
-information.binaural.mi = zeros(numcfs, total_frames);
-information.binaural.Si = zeros(numcfs, total_frames);
-information.binaural.Ri = zeros(numcfs, total_frames);
+information.binaural.S_delay = zeros(1, awTotal);
+information.binaural.R_delay = zeros(1, awTotal);
+information.binaural.mi = zeros(numcfs, awTotal);
+information.binaural.Si = zeros(numcfs, awTotal);
+information.binaural.Ri = zeros(numcfs, awTotal);
 
 for n=1:awTotal
     % Get frames
