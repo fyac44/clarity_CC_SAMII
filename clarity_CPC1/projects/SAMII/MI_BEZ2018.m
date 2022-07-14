@@ -52,7 +52,7 @@ nFibers = sum(numsponts_healthy, 'all');
 spt_trans = struct();
 spt_per = struct();
 
-disp('Computing spike trains for transmitting information')
+disp('Computing spike trains for S')
 
 if useGPU
     [spt_trans.left,spt_trans.t] = BEZ2018_GPU(trans_audio(:,1), fs_t, ...
@@ -62,7 +62,7 @@ if useGPU
         ag_dbloss, CFs, numsponts_healthy, useGPU);
     
     % Obtain spike trains of perceived stimulus with hearing loss
-    disp('Computing spike trains for perceived information')
+    disp('Computing spike trains for R')
     [spt_per.left,spt_per.t] = BEZ2018_GPU(per_audio(:,1), fs_p, ...
         audiogram.cfs, audiogram.left, CFs, numsponts_healthy);
     
@@ -77,7 +77,7 @@ else
         ag_dbloss, CFs, numsponts_healthy);
     
     % Obtain spike trains of perceived stimulus with hearing loss
-    disp('Computing spike trains for perceived information')
+    disp('Computing spike trains for R')
     [spt_per.left,spt_per.t] = BEZ2018(per_audio(:,1), fs_p, ...
         audiogram.cfs, audiogram.left, CFs, numsponts_healthy);
     
@@ -86,6 +86,7 @@ else
 end
 
 %% Get information from spike trains
+disp('Computing mutual information and entropies')
 if useGPU
     information = binauralMI_GPU(spt_trans, spt_per, numcfs, nFibers, CFs);
 else

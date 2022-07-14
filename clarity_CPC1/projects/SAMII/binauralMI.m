@@ -80,22 +80,22 @@ for n=1:awTotal
 
     % Binaural representation in this specific analysis window
     spt_S.binaural = ...
-        spt_S.left(:,init_frame+delay_an:end_frame+delay_S) + ...
+        spt_S.left(:,init_frame+delay_S:end_frame+delay_S) + ...
         spt_S.right(:,init_frame:end_frame);
     spt_R.binaural = ...
-        spt_R.left(:,init_frame+delay_ha:end_frame+delay_R) + ...
+        spt_R.left(:,init_frame+delay_R:end_frame+delay_R) + ...
         spt_R.right(:,init_frame:end_frame);
 
     for cf=1:numcfs
         % Time integration
-        S_l = reduce(spt_S.left(cf,init_frame:end_frame), i_frames);
-        R_l = reduce(spt_R.left(cf,init_frame:end_frame), i_frames);
+        S_l = reduce(spt_S.left(cf,init_frame:end_frame), iSamples);
+        R_l = reduce(spt_R.left(cf,init_frame:end_frame), iSamples);
 
-        S_r = reduce(spt_S.right(cf,init_frame:end_frame), i_frames);
-        R_r = reduce(spt_R.right(cf,init_frame:end_frame), i_frames);
+        S_r = reduce(spt_S.right(cf,init_frame:end_frame), iSamples);
+        R_r = reduce(spt_R.right(cf,init_frame:end_frame), iSamples);
 
-        S_b = reduce(spt_S.binaural(cf,:), i_frames);
-        R_b = reduce(spt_R.binaural(cf,:), i_frames);
+        S_b = reduce(spt_S.binaural(cf,:), iSamples);
+        R_b = reduce(spt_R.binaural(cf,:), iSamples);
 
         % Mutual information for every cf (left, rigth and binaural)
         information.left.mi(cf,n) = my_mutualinfo(S_l, R_l, nFibers);

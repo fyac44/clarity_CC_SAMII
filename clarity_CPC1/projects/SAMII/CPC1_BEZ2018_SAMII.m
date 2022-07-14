@@ -22,14 +22,23 @@ function CPC1_BEZ2018_SAMII(root_path, dataset, n_process)
 % First Clarity Prediction Challenge (2021-2022) and INTERSPEECH 2022
 
 %% Paths
+mi_output_path = [root_path filesep 'data' filesep 'clarity_data' ...
+    filesep 'clarity_data' filesep 'mutualinfo'];
+if not(isfolder(mi_output_path))
+    mkdir(mi_output_path)
+end
+
 metadata_path = [root_path filesep 'data' filesep 'clarity_data' ...
     filesep 'metadata'];
 scenes_data_path = [root_path filesep 'data' filesep 'clarity_data' ...
     filesep 'clarity_data' filesep 'scenes'];
 ha_output_path = [root_path filesep 'data' filesep 'clarity_data' ...
     filesep 'clarity_data' filesep 'HA_outputs' filesep dataset];
-output_path = [root_path filesep 'data' filesep 'clarity_data' ...
-    filesep 'clarity_data' filesep 'mutualinfo' filesep dataset];
+output_path = [mi_output_path filesep dataset];
+
+if not(isfolder(output_path))
+    mkdir(output_path)
+end
 
 addpath([root_path filesep 'projects' filesep 'BEZ2018_CUDA'])
 
