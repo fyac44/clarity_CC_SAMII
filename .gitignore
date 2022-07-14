@@ -28,4 +28,4 @@
 **/*.egg-info
 
 # Path file
-*paths.sh
+*/clarity_CPC1/scripts/paths.sh
