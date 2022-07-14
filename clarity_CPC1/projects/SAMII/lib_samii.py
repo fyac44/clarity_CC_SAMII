@@ -7,8 +7,8 @@ class samii:
 
         # Information data
         self.mi = np.array(ear['mi'])    # Mutual information
-        self.ti = np.array(ear['ti'])    # Transmitted information
-        self.pi = np.array(ear['pi'])    # Received information
+        self.ti = np.array(ear['Si'])    # Transmitted information
+        self.pi = np.array(ear['Ri'])    # Received information
 
         # Center frequencies and analysis windows
         self.cfs = np.array(cfs)

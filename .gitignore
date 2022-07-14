@@ -28,7 +28,10 @@
 **/*.egg-info
 
 # Path file
-*/clarity_CPC1/scripts/paths.sh
+clarity_CPC1/scripts/paths.sh
 
 # csv files
 *.csv
+
+# Visual studio code
+**/.vscode

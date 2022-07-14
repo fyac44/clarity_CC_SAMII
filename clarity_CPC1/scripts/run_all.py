@@ -5,6 +5,7 @@ Use this script to understand how to run and use the tools provided.
 (This script serves as a replacement for the top-level bash scripts
 that were used in the initial release and which are now obsolete.)
 """
+import sys
 
 import argparse
 import pandas as pd
