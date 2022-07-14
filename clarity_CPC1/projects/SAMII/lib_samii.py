@@ -78,8 +78,9 @@ class samii:
             of fibers.
         '''
 
-        weighted_mi = self.mi*self.out_samples#/self.pi#*self.wmatrix
-        weighted_mi[weighted_mi != weighted_mi] = 0
+        weighted_mi = self.mi*self.out_samples#*self.wmatrix
+        #weighted_mi[weighted_mi != weighted_mi] = 0
+        #weighted_mi[self.ti == 0] = 0
         total_info_samples = self.ti_samples.sum()
         
         # mutual information speech intelligibility index
@@ -113,55 +114,70 @@ class experiment:
     def _plot_ear(self, samii, ofile):
 
         # plot code
-        fig, ([ax_ti, ax_pi], [ax_mi, ax_mir], [ax_aux1, ax_aux2]) = plt.subplots(3, 2, sharex=True, sharey=True)
-        
+        fig1, ax_ti = plt.subplots()
+        fig2, ax_pi = plt.subplots()
+        fig3, ax_mi = plt.subplots()
+        fig, (ax_mir, ax_aux1, ax_aux2) = plt.subplots(1, 3, sharex=True, sharey=True)
+
         # Plot Mutual Information
-        im_mi = ax_mi.pcolormesh(self.tstamps, self.cfs, samii.mi)
+        im_mi = ax_mi.pcolormesh(self.tstamps, self.cfs, samii.mi, cmap='gray')
         ax_mi.set_title('Mutual Information "I(S|R)"')
         ax_mi.set_yscale('log')
+        ax_mi.set_yticks([300, 1000, 7000])
 
         # Plot Sacaling Factor
-        im_mir = ax_mir.pcolormesh(self.tstamps, self.cfs, samii.wmatrix)
+        im_mir = ax_mir.pcolormesh(self.tstamps, self.cfs, samii.wmatrix, cmap='gray')
         ax_mir.set_title('Weighting Matrix "ω"')
         ax_mir.set_yscale('log')
 
         # Plot Transmitted Information
-        im_ti = ax_ti.pcolormesh(self.tstamps, self.cfs, samii.ti)
+        im_ti = ax_ti.pcolormesh(self.tstamps, self.cfs, samii.ti, cmap='gray')
         ax_ti.set_title('Transmitted Information "H(S)"')
         ax_ti.set_yscale('log')
+        ax_ti.set_yticks([300, 1000, 7000])
 
         # Plot Recived Information
-        im_pi = ax_pi.pcolormesh(self.tstamps, self.cfs, samii.pi)
+        im_pi = ax_pi.pcolormesh(self.tstamps, self.cfs, samii.pi, cmap='gray')
         ax_pi.set_title('Perceived Information "H(R)"')
         ax_pi.set_yscale('log')
+        ax_pi.set_yticks([300, 1000, 7000])
 
         # Plot samples
-        im_aux1 = ax_aux1.pcolormesh(self.tstamps, self.cfs, 1*samii.ti_samples + 1*samii.out_samples)
+        im_aux1 = ax_aux1.pcolormesh(self.tstamps, self.cfs, 1*samii.ti_samples + 1*samii.out_samples, cmap='gray')
         ax_aux1.set_title('Used samples "Z" and "Z_R"')
         ax_aux1.set_yscale('log')
 
         # Plot Output
-        im_aux2 = ax_aux2.pcolormesh(self.tstamps, self.cfs, samii.wmi)
+        im_aux2 = ax_aux2.pcolormesh(self.tstamps, self.cfs, samii.wmi, cmap='gray')
         ax_aux2.set_title('Output')
         ax_aux2.set_yscale('log')
 
         # Axes
         ax_aux1.set_xlabel('Time [s]')
         ax_aux2.set_xlabel('Time [s]')
-        ax_mi.set_ylabel('Freaquency [Hz]')
-        ax_ti.set_ylabel('Freaquency [Hz]')
-        ax_aux1.set_ylabel('Freaquency [Hz]')
+        ax_mi.set_xlabel('Time [s]')
+        ax_pi.set_xlabel('Time [s]')
+        ax_ti.set_xlabel('Time [s]')
+        ax_mi.set_ylabel('Frequency [Hz]')
+        ax_ti.set_ylabel('Frequency [Hz]')
+        ax_pi.set_ylabel('Frequency [Hz]')
+        ax_aux1.set_ylabel('Frequency [Hz]')
 
         # Colorbars
-        fig.colorbar(im_mi, ax=ax_mi, label='Information [bits]')
+        fig3.colorbar(im_mi, ax=ax_mi, label='Information [bits]')
         fig.colorbar(im_mir, ax=ax_mir, label='Information weight')
-        fig.colorbar(im_ti, ax=ax_ti, label='Information [bits]')
-        fig.colorbar(im_pi, ax=ax_pi, label='Information [bits]')
+        fig1.colorbar(im_ti, ax=ax_ti, label='Information [bits]')
+        fig2.colorbar(im_pi, ax=ax_pi, label='Information [bits]')
         fig.colorbar(im_aux1, ax=ax_aux1, label='Unused-Transmitted-Used')
         fig.colorbar(im_aux2, ax=ax_aux2, label='Weighted information [bits]')
         fig.tight_layout()
         fig.set_size_inches(9, 5)
-        fig.savefig(ofile, dpi=1200)
+        fig1.savefig(ofile+'ti.png')
+        fig2.savefig(ofile+'pi.png')
+        fig3.savefig(ofile+'mi.png')
+        fig1.tight_layout()
+        fig2.tight_layout()
+        fig3.tight_layout()
         plt.close(fig)
         return
     

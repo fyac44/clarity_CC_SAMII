@@ -51,7 +51,7 @@ validation_samii_lst = list()
 validation_correctness_lst = list()
 correctness_lst = list()
 
-validate = 0
+validate = 5
 plotit = 0
 
 for file in data_list:
@@ -61,9 +61,6 @@ for file in data_list:
     with open(data_path+file) as json_data:
         data = json.load(json_data)
     
-    exp = experiment(data, filename, pre_silence)
-
-    samii = exp.get_samii()
     correctness = metadata[filename]['correctness']
     listener = metadata[filename]['listener']
     system = metadata[filename]['system']
@@ -71,11 +68,27 @@ for file in data_list:
     if baseline.get(filename) is None:
         continue
 
-    if plotit < 0 and system == 'E003':
-        exp.generate_plots('./projects/SAMII/figures/')
-        plotit += 1
+    #if system in ['E003', 'E007', 'E009', 'E010', 'E021']:
+    #    continue
+
+    #if system != 'E005':
+    #    continue
+
+    #if listener != 'L0231':
+    #    continue
+
+    #if scene != 'S09681':
+    #    continue
+
+    exp = experiment(data, filename, pre_silence)
+
+    samii = exp.get_samii()
 
     mbstoi = float(baseline[filename])
+
+    if plotit < 1 and system == 'E010':
+        exp.generate_plots('./projects/SAMII/figures/')
+        plotit += 1
 
     #
     mbstoi_dict[listener] = mbstoi_dict.get(listener, list())
@@ -98,7 +111,7 @@ for file in data_list:
     correctness_dict[system].append(correctness)
     correctness_dict[scene].append(correctness)
 
-    if validate == -1:
+    if validate == 9:
         validation_mbstoi_lst.append(mbstoi)
         validation_samii_lst.append(samii)
         validation_correctness_lst.append(correctness)
@@ -120,7 +133,7 @@ for k in samii_col.keys():
 
 mbstoi_lst[mbstoi_lst != mbstoi_lst] = 0.5
 
-samii_p0 = [np.median(samii_lst),100] # this is an mandatory initial guess
+samii_p0 = [np.median(samii_lst),1] # this is an mandatory initial guess
 mbstoi_p0 = [np.median(samii_lst),1] # this is an mandatory initial guess
 
 samii_popt, samii_pcov = curve_fit(sigmoid, samii_lst, correctness_lst, samii_p0, method='lm')
@@ -131,7 +144,7 @@ mbstoi_points = np.arange(len(mbstoi_lst))/(len(mbstoi_lst)-1) * max(mbstoi_lst)
 
 samii_sigmoid = sigmoid(samii_points, samii_popt[0], samii_popt[1])
 mbstoi_sigmoid = sigmoid(mbstoi_points, mbstoi_popt[0], mbstoi_popt[1])
-'''
+
 samii_fit = sigmoid(validation_samii_lst, samii_popt[0], samii_popt[1])
 mbstoi_fit = sigmoid(validation_mbstoi_lst, mbstoi_popt[0], mbstoi_popt[1])
 
@@ -140,7 +153,8 @@ mbstoi_rmse = np.sqrt(np.square(np.subtract(mbstoi_fit, validation_correctness_l
 
 fig1, ax_sf = plt.subplots()
 fig2, ax_sp = plt.subplots()
-fig3, (ax_mf, ax_mp) = plt.subplots(1, 2, sharey=True)
+fig3, ax_mf = plt.subplots()
+fig4, ax_mp = plt.subplots()
 
 ax_sf.scatter(samii_lst, correctness_lst, 5, c='gray', marker='x', label='fitting scenes')
 ax_sf.plot(samii_points, samii_sigmoid, color='black',  label='fitted sigmoid')
@@ -157,9 +171,12 @@ ax_sp.set_xticks([0, 25, 50, 75, 100])
 ax_sp.set_ylim((-5, 105))
 ax_sp.set_yticks([0, 25, 50, 75, 100])
 
-ax_mf.scatter(mbstoi_lst, correctness_lst, 5, c='gray', marker='x')
-ax_mf.plot(mbstoi_points, mbstoi_sigmoid, color='black')
+ax_mf.scatter(mbstoi_lst, correctness_lst, 5, c='gray', marker='x', label='fitting scenes')
+ax_mf.plot(mbstoi_points, mbstoi_sigmoid, color='black', label='fitted sigmoid')
 ax_mf.set_title('MBSTOI Fitting')
+ax_mf.set_xlim((0.9*min(mbstoi_lst), 0.1*min(mbstoi_lst)+max(mbstoi_lst)))
+ax_mf.set_ylim((-5, 105))
+ax_mf.set_yticks([0, 25, 50, 75, 100])
 
 ax_mp.scatter(mbstoi_fit, validation_correctness_lst, 5, c='gray', marker='x')
 ax_mp.set_title('MBSTOI Predictions')
@@ -170,22 +187,17 @@ ax_sf.set_ylabel('Correctness [%]')
 ax_sp.set_ylabel('Correctness [%]')
 ax_sf.legend()
 ax_sp.legend()
+ax_mf.legend()
 ax_mf.set_xlabel('MBSTOI')
 ax_mp.set_xlabel('Prediction (MBSTOI) - rmse: {:.2f}'.format(mbstoi_rmse))
-ax_mf.set_ylabel('Correctness')
+ax_mf.set_ylabel('Correctness [%]')
 
 fig1.tight_layout()
 fig2.tight_layout()
 fig3.tight_layout()
+fig4.tight_layout()
 
-fig1.savefig(figures_path + 'samii_fit.png')
-fig2.savefig(figures_path + 'samii_val.png')
-fig3.savefig(figures_path + 'samii_mbstoi.png')
-plt.close(fig1)
-plt.close(fig2)
-plt.close(fig3)
-
-'''
+plt.show()
 
 test_list = os.listdir(test_path)
 filename_lst = list()

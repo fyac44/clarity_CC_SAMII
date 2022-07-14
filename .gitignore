@@ -29,3 +29,6 @@
 
 # Path file
 */clarity_CPC1/scripts/paths.sh
+
+# csv files
+*.csv
