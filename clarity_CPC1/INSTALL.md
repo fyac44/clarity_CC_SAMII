@@ -52,6 +52,7 @@ where `DOWNLOAD_DIR` is the location of the download and `<TARGET_DIR>` is the d
 IMPORTANT: Do not untar the package by hand. In addition to untarring, the `unpack.sh` script adds a couple of important symbolic links from the installation directory to the downloaded data.
 
 > ***Note***, if you have previously downloaded the earlier `clarity_CPC1_data.v1.tgz`, you will need to update the metadata. The updated metadata is included in this repository and just needs to be copied into place. See `install/patched/README.md` for details.
+
 ## 3. Check the integrity of the data
 
 A simple script is available that will check that the data is correctly installed.
@@ -66,6 +67,11 @@ python3 scripts/check_data.py data/clarity_data/
 Open MATLAB and go to the following directory `projects/BEZ2018_CUDA`
 
 Execute the file `mexANmodel.m`
+
+Do not forget to include a path or a command to excecute matlab from the command line:
+
+- open `scripts/paths.sh` 
+- modify this line: `export MATLAB_BIN="<MATLAB_PATH OR COMMAND>"`
 
 ## 5. Compile cu code for the BEZ2018 model (ONLY NVIDIA GPUs)
 

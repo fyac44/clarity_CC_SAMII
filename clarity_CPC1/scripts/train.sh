@@ -4,7 +4,7 @@
 #
 # Usage:
 #
-# predict.sh <DATASET> [<NSIGNALS_TO_PROCESS>]
+# train.sh <DATASET> [<NSIGNALS_TO_PROCESS>]
 #
 # If NSIGNALS_TO_PROCESS is not specified, all signals in the dataset will be processed.
 #
@@ -45,4 +45,4 @@ echo $SAMII_ROOT
 ( echo "addpath ${SAMII_ROOT};" && echo "CPC1_BEZ2018_SAMII('${CLARITY_ROOT}','${dataset}','${nsignals}');" ) | ${MATLAB_BIN} || exit 1
 
 # Run SAMII from information and mutual information
-# $PYTHON_BIN "$CLARITY_ROOT"/scripts/calculate_SI.py --nsignals="$nsignals" "$CLARITY_DATA"/metadata/CPC1."$dataset".json "$CLARITY_DATA"/clarity_data/scenes "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset" mbstoi."$dataset".csv
+#$PYTHON_BIN "$CLARITY_ROOT"/projects/SAMII --nsignals="$nsignals" "$CLARITY_DATA"/metadata/CPC1."$dataset".json "$CLARITY_DATA"/clarity_data/scenes "$CLARITY_DATA"/clarity_data/HA_outputs/"$dataset" mbstoi."$dataset".csv

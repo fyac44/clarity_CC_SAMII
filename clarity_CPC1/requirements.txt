@@ -3,6 +3,7 @@ numpy
 wheel
 tqdm
 pandas
+matplotlib
 jinja2
 jsonschema
 jsonpath-ng

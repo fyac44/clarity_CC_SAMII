@@ -26,3 +26,6 @@
 
 # Eggs
 **/*.egg-info
+
+# Path file
+clarity_CPC1/scripts/paths.sh
