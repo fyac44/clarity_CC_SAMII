@@ -11,9 +11,9 @@ class samii:
         self.pi = np.array(ear['Ri'])    # Received information
 
         # Center frequencies and analysis windows
-        self.cfs = np.array(cfs)
-        self.tstamps = np.array(tstamps)
-        self.ncfs = len(self.cfs) # Number of center frequencies
+        self.cfs = np.array(cfs)         # Center frequencies
+        self.tstamps = np.array(tstamps) # Time stamps
+        self.ncfs = len(self.cfs)        # Number of center frequencies
         self.total_awindows = len(self.tstamps) # Total analysis windows
         self.pre_silence = pre_silence # Time in seconds previous to the target 
                                        # stimulus. It is used to estimate the 
@@ -22,12 +22,12 @@ class samii:
 
         # Obtain values
         self.info_thrs, self.mi_thrs = self._obtain_infothrs() # Information thresholds per CF
-        self.wmatrix = self._obtain_weight_matrix() # Weightening matrix
+        #self.wmatrix = self._obtain_weight_matrix() # Weightening matrix [Not Implemented]
         mi_samples = np.array([self.mi[cf,:]>self.mi_thrs[cf] 
                                     for cf in range(self.ncfs)])
         self.ti_samples = np.array([self.ti[cf,:]>self.info_thrs[cf]
                                     for cf in range(self.ncfs)])
-        self.out_samples = self.ti_samples * mi_samples
+        self.out_samples = self.ti_samples * mi_samples # Average only the mutual information on these samples
         [self.wmi, self.samii] = self._calculate_samii()
         return
     
@@ -35,7 +35,7 @@ class samii:
         # To take into account the most important samples in the calculation of the
         # samii, a weightening matrix is used over the mutual information signal. 
         # The weights depend on the the sum of the received and transmitted 
-        # information.
+        # information. [Not Implemented]
         mi_diff = np.array([self.mi[cf,:] - self.mi_thrs[cf] for cf in range(self.ncfs)])
         mi_diff[mi_diff < 0] = 0
         weight_matrix = self.ncfs*np.array(
@@ -44,7 +44,6 @@ class samii:
                 ((1/self.pi[:,s]).sum())
             for s in range(self.total_awindows)
             ]).transpose()
-        # weight_matrix = np.ones((self.total_awindows, self.ncfs))
         weight_matrix[weight_matrix != weight_matrix] = 0
         weight_matrix[self.pi == 0] = 0
         weight_matrix[self.mi == 0] = 0
@@ -63,7 +62,7 @@ class samii:
 
     def _calculate_samii(self):
         '''
-        samii is the weightened average of "mutual information" (mi) within the 
+        samii is the [weighted] average of "mutual information" (mi) within the 
         samples where that is over the spontaneous spike activity.
 
         Input:
@@ -78,7 +77,7 @@ class samii:
             of fibers.
         '''
 
-        weighted_mi = self.mi*self.out_samples#*self.wmatrix
+        weighted_mi = self.mi*self.out_samples#*self.wmatrix # Weight not implemented
         #weighted_mi[weighted_mi != weighted_mi] = 0
         #weighted_mi[self.ti == 0] = 0
         total_info_samples = self.ti_samples.sum()

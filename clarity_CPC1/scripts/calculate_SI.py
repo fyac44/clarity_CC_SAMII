@@ -103,7 +103,7 @@ def main(signals_filename, clean_input_path, processed_input_path, output_sii_fi
 
     f = open(output_sii_file, "a")
     writer = csv.writer(f)
-    writer.writerow(["scene", "listener", "system", "MBSTOI"])
+    writer.writerow(["scene", "listener", "system", "mbstoi"])
 
     # Process the first n signals if the nsignals parameter is set
     if nsignals and nsignals > 0:

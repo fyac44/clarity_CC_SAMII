@@ -1,6 +1,6 @@
-# Running the baseline prediction model
+# Running prediction models
 
-The scripts in this directory reproduce our baseline system and use the baseline system outputs to demonstrate how systems will be evaluated.
+The scripts in this directory reproduce the baseline and our proposed SAMII system.
 
 The top-level script ```run_all.py``` has been heavily documented to make each stage clear. Please see the notes below and then refer to the 
 code for further details.
@@ -13,6 +13,8 @@ The following tools are provided
   3. calculate_SI.py -- runs the MSBG outputs through the MBSTOI intelligibilty model
   4. predict_intel.py -- maps MBSTOI scores onto intelligibility scores
   5. report_rmse_score.py -- reports the RMS error metric for the predicted intelligiblity scores
+  6. CPC1_BEZ2018_SAMII.m -- Interface between clarity code and SAMII (mostly written in matlab)
+  7. calculate_SAMII.py -- calculate SAMII from the mutual information .json files
 
 The tools are called in sequence by a top-level script `run_all.py` that runs and evaluates the baseline system
 

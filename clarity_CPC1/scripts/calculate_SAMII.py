@@ -36,7 +36,7 @@ def main(signals_directory, metadata_filename, output_samii_file, nsignals=None)
 
     f = open(output_samii_file, "a")
     writer = csv.writer(f)
-    writer.writerow(["scene", "listener", "system", "SAMII"])
+    writer.writerow(["scene", "listener", "system", "samii"])
 
     # Process the first n signals if the nsignals parameter is set
     if nsignals and nsignals > 0:

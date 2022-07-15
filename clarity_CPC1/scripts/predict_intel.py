@@ -62,10 +62,10 @@ class Model:
         L = 100  # correctness can't be over 100
         return L / (1 + np.exp(-k * (x - x0)))
 
-    def fit(self, mbstoi, intel):
+    def fit(self, index, intel):
         """Fit a mapping betweeen mbstoi scores and intelligibility scores."""
         initial_guess = [0.5, 1.0]  # Initial guess for parameter values
-        self.params, pcov = curve_fit(self._sigmoid_mapping, mbstoi, intel, initial_guess)
+        self.params, pcov = curve_fit(self._sigmoid_mapping, index, intel, initial_guess)
 
     def predict(self, x):
         """Predict intelligilbity scores from mbstoi scores."""
@@ -74,15 +74,15 @@ class Model:
         return self._sigmoid_mapping(x, self.params[0], self.params[1])
 
 
-def main(mbstoi_file_csv, intel_file_json, prediction_file_csv):
+def main(index_name, index_file_csv, intel_file_json, prediction_file_csv):
 
     # Load the mbstoi data and the intelligibility data
-    df_mbstoi = pd.read_csv(mbstoi_file_csv)
+    df_index = pd.read_csv(index_file_csv)
     df_intel = pd.read_json(intel_file_json)
 
     # Merge into a common dataframe
     data = pd.merge(
-        df_mbstoi,
+        df_index,
         df_intel[["scene", "listener", "system", "correctness"]],
         how="left",
         on=["scene", "listener", "system"],
@@ -104,12 +104,12 @@ def main(mbstoi_file_csv, intel_file_json, prediction_file_csv):
         # Fit the logistic function to map from mbstoi to intelligibility
         # Using only the data corresponding to the train set scenes
         train_data = data[data.scene.isin(train_scenes)]
-        model.fit(train_data["mbstoi"], train_data["correctness"])
+        model.fit(train_data[index_name], train_data["correctness"])
 
         # Make the intelligibility predictions with the fitted model
         # Applying them only to the test set scenes
         data.loc[data.scene.isin(test_scenes), ["predicted"]] = model.predict(
-            data[data.scene.isin(test_scenes)]["mbstoi"]
+            data[data.scene.isin(test_scenes)][index_name]
         )
 
     # There should be no scenes without a prediction
@@ -121,7 +121,8 @@ def main(mbstoi_file_csv, intel_file_json, prediction_file_csv):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("mbstoi_csv_file", help="csv file containing MBSTOI predictions")
+    parser.add_argument("index_name", help="mbstoi or samii")
+    parser.add_argument("index_csv_file", help="csv file containing MBSTOI/SAMII predictions")
     parser.add_argument(
         "cpc1_train_json_file", help="JSON file containing the CPC1 training metadata"
     )
@@ -130,4 +131,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    main(args.mbstoi_csv_file, args.cpc1_train_json_file, args.out_csv_file)
+    main(args.index_name, args.index_csv_file, args.cpc1_train_json_file, args.out_csv_file)

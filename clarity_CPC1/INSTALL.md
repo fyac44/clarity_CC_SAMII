@@ -88,7 +88,20 @@ nvcc -ptx BEZ2018_GPU/model_Synapse_BEZ2018.cu
 nvcc -ptx SAMII/mutual_info.cu
 ```
 
-## 6. Generate predicted intelligibility scores
+## 6. Setup matlab API in python
+
+This step is required in case you choose to use the python scripts, otherwise you could use only bash files.
+
+Steps to install the API is simple and is described [here](https://de.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
+
+```bash
+cd $MATLAB_ROOT$/extern/engine/python
+python setup.py install
+```
+
+Make sure to perform this step whithin the CPC1 python environment!!
+
+## 7. Generate predicted intelligibility scores
 
 A baseline intelligibility model is provided. The model is based on a combination of the MSBG hearing loss model and the MBSTOI intelligibility metric. The same model was previously used in the CEC1 enhancement challenge in the objective evaluation of the hearing aid algorithms that were submitted.
 

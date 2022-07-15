@@ -41,6 +41,7 @@ if not(isfolder(output_path))
 end
 
 addpath([root_path filesep 'projects' filesep 'BEZ2018_CUDA'])
+addpath([root_path filesep 'projects' filesep 'SAMII'])
 
 %% Read json files
 % Listeners
