@@ -59,7 +59,7 @@ if useGPU
         ag_fs, ag_dbloss, CFs, numsponts_healthy);
     
     [spt_trans.right,~] = BEZ2018_GPU(trans_audio(:,2), fs_t, ag_fs, ...
-        ag_dbloss, CFs, numsponts_healthy, useGPU);
+        ag_dbloss, CFs, numsponts_healthy);
     
     % Obtain spike trains of perceived stimulus with hearing loss
     disp('Computing spike trains for R')
